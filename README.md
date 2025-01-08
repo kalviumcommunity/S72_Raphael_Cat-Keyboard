@@ -7,8 +7,6 @@ CAT KEYBOARD
 
 Symphonic Meow Sounds: Each keypress triggers a specific cat meow with a defined pitch and adjustable volume.
 
-Analytics Tracking: Logs keypress data and provides insights like most-used keys and favorite meows.
-
 **Tech Stack:**
 
 Frontend:
