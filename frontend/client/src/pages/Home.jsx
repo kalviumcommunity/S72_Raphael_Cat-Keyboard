@@ -6,6 +6,11 @@ export default function CatKeyboardLanding() {
   return (
     <div className="min-h-screen bg-gradient-to-r from-purple-300 to-pink-300 flex flex-col items-center justify-center text-center p-4">
   {/* Hero Section */}
+    <div className="absolute top-0 left-0 m-5 max-w-2xl bg-white p-4 rounded-2xl shadow-lg mb-12 hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out ">
+      <button onClick={()=>navigate("/profile")} className="text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
+        Login
+      </button>
+    </div>
   <div className="max-w-2xl bg-white p-8 rounded-2xl shadow-lg mb-12 hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out">
     <h1 className="text-5xl font-bold text-gray-800 flex items-center justify-center gap-2">
       <FaCat className="text-purple-500" /> Cat Keyboard
