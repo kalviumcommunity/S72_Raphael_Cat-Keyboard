@@ -3,6 +3,7 @@ import React from "react"
 import { BrowserRouter,Routes,Route } from 'react-router-dom';
 import {CatKeyboardLanding} from "./routes/route.js"
 import {CatKeyboardPage} from "./routes/route.js"
+import {Profile} from "./routes/route.js";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<CatKeyboardLanding/>} />
         <Route path="/keyboard" element={<CatKeyboardPage/>} />
+        <Route path="/profile" element={<Profile/>} />
 </Routes>
     </BrowserRouter>
   )
