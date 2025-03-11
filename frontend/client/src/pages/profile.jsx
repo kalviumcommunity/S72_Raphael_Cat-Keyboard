@@ -12,7 +12,7 @@ const Profile = () => {
         Home
       </button>
             </div>
-            <h1 className="text-3xl font-bold mb-6">My Profile</h1>
+            <h1 className="text-3xl font-bold mb-6">User Profiles</h1>
             <ProfileComponent />
         </div>
     );
