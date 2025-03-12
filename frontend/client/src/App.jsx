@@ -12,6 +12,7 @@ function App() {
         <Route path="/" element={<CatKeyboardLanding/>} />
         <Route path="/keyboard" element={<CatKeyboardPage/>} />
         <Route path="/profile" element={<Profile/>} />
+        <Route path="/profile/:id" element={<Profile />} />
 </Routes>
     </BrowserRouter>
   )
