@@ -89,7 +89,6 @@ const ProfileComponent = () => {
     // Delete profile
     const handleDelete = async () => {
         if (!window.confirm("Are you sure you want to delete this profile?")) return;
-
         try {
             await axios.delete(`http://localhost:3000/api/profile/${id}`);
             alert("Profile deleted successfully!");
@@ -115,7 +114,6 @@ const ProfileComponent = () => {
                     >
                         <span className="text-3xl text-gray-700 font-bold">+</span>
                     </button>
-
                     <ul className="w-full flex flex-col items-center space-y-6">
                         {users.map((user) => (
                             <li 
@@ -252,7 +250,6 @@ const ProfileComponent = () => {
                     </div>
                 </>
             ) : (
-
                 <>
                     <h2 className="text-2xl font-semibold text-white">{user?.name}</h2>
                     <p className="text-lg text-gray-200">{user?.email}</p>
@@ -277,7 +274,6 @@ const ProfileComponent = () => {
                         </button>
                     </div>
                 </>
-                
             )}
             </div>
         </div>
