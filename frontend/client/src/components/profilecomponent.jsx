@@ -74,7 +74,6 @@ const ProfileComponent = () => {
     // Delete profile
     const handleDelete = async () => {
         if (!window.confirm("Are you sure you want to delete this profile?")) return;
-
         try {
             await axios.delete(`http://localhost:3000/api/profile/${editedUser._id}`);
             alert("Profile deleted successfully!");
@@ -130,7 +129,6 @@ const ProfileComponent = () => {
                                             className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
                                         />
                                     </div>
-
                                     <div>
                                         <label className="block text-white font-semibold mb-1" htmlFor="image">Profile Image URL:</label>
                                         <input 
@@ -194,7 +192,6 @@ const ProfileComponent = () => {
                     </div>
                 )}
             </div>
-
             {/* Modal for Adding New User */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
