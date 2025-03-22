@@ -2,6 +2,36 @@ const express = require("express");
 const router = express.Router();
 const User = require("../model/user"); // Import User model
 
+// Login endpoint
+router.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        if (!email || !password) {
+            return res.status(400).json({ error: "Email and password are required" });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
+
+        // Simple password check (in a real app, you should use bcrypt)
+        if (user.password !== password) {
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
+
+        res.json({ 
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            image: user.image
+        });
+    } catch (error) {
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 // ✅ POST: Create a new user
 router.post("/", async (req, res) => {
     try {

@@ -1,47 +1,33 @@
 //eslint-disable-next-line
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const ProfileComponent = () => {
-    const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [users, setUsers] = useState([]);
-    const [user, setUser] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [editedUser, setEditedUser] = useState({ name: "", email: "", image: "" });
-    const [isModalOpen, setIsModalOpen] = useState(false); // State for modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [newUser, setNewUser] = useState({ name: "", email: "", password: "", image: "" });
 
     useEffect(() => {
-        if (id) {
-            const fetchUserProfile = async () => {
-                try {
-                    const res = await axios.get(`http://localhost:3000/api/profile/${id}`);
-                    setUser(res.data);
-                    setEditedUser(res.data);
-                    setLoading(false);
-                } catch (error) {
-                    console.error("Error fetching user profile:", error);
-                    setLoading(false);
+        const fetchAllUsers = async () => {
+            try {
+                const res = await axios.get("http://localhost:3000/api/profile");
+                setUsers(res.data);
+                if (res.data.length > 0) {
+                    setEditedUser(res.data[0]);
                 }
-            };
-            fetchUserProfile();
-        } else {
-            const fetchAllUsers = async () => {
-                try {
-                    const res = await axios.get("http://localhost:3000/api/profile");
-                    setUsers(res.data);
-                    setLoading(false);
-                } catch (error) {
-                    console.error("Error fetching users:", error);
-                    setLoading(false);
-                }
-            };
-            fetchAllUsers();
-        }
-    }, [id]);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+                setLoading(false);
+            }
+        };
+        fetchAllUsers();
+    }, []);
 
     // Handle input changes for editing profile
     const handleInputChange = (e) => {
@@ -64,10 +50,10 @@ const ProfileComponent = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:3000/api/profile", newUser);
+            await axios.post("http://localhost:3000/api/profile", newUser);
             alert("User added successfully!");
-            setIsModalOpen(false); // Close modal on success
-            navigate(`/profile/${response.data._id}`);
+            setIsModalOpen(false);
+            window.location.reload();
         } catch (error) {
             console.error("Error adding user:", error);
             alert(error.response?.data?.error || "Failed to add user.");
@@ -77,8 +63,7 @@ const ProfileComponent = () => {
     // Save edited profile
     const handleSave = async () => {
         try {
-            await axios.put(`http://localhost:3000/api/profile/${id}`, editedUser);
-            setUser(editedUser);
+            await axios.put(`http://localhost:3000/api/profile/${editedUser._id}`, editedUser);
             setEditMode(false);
             alert("Profile updated successfully!");
         } catch (error) {
@@ -91,9 +76,9 @@ const ProfileComponent = () => {
         if (!window.confirm("Are you sure you want to delete this profile?")) return;
 
         try {
-            await axios.delete(`http://localhost:3000/api/profile/${id}`);
+            await axios.delete(`http://localhost:3000/api/profile/${editedUser._id}`);
             alert("Profile deleted successfully!");
-            navigate("/profile");
+            window.location.reload();
         } catch (error) {
             console.error("Error deleting profile:", error);
         }
@@ -101,185 +86,175 @@ const ProfileComponent = () => {
 
     if (loading) return <p>Loading...</p>;
 
-    if (!id) {
-        return (
-            <div 
-                className="p-6 min-h-[500px] max-w-[800px] flex flex-col items-center space-y-6 bg-contain bg-center bg-no-repeat w-screen rounded-xl overflow-hidden"
-                style={{ backgroundImage: "url('https://images.unsplash.com/photo-1720358553488-d332927ce65b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bW91bnRhaW4lMjBhZXN0aGV0aWN8ZW58MHx8MHx8fDA%3D')", backgroundSize: "cover" }}
-            >
-                <div className="w-full max-w-[700px] flex flex-col items-center">
-                    {/* Add Button */}
-                    <button 
-                        onClick={() => setIsModalOpen(true)} 
-                        className="relative w-full mb-6 md:w-3/5 lg:w-2/3 bg-white/30 rounded-xl shadow-lg backdrop-blur-md hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out flex justify-center items-center cursor-pointer p-6"
+    return (
+        <div 
+            className="h-screen flex items-center justify-center w-full bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1720358553488-d332927ce65b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bW91bnRhaW4lMjBhZXN0aGV0aWN8ZW58MHx8MHx8fDA%3D')" }}
+        >
+            <div className="w-full max-w-2xl mx-auto px-4 flex justify-center items-center min-h-screen">
+                {users.length > 0 && (
+                    <div 
+                        onClick={() => !editMode && setEditMode(true)}
+                        className="relative min-w-[800px] min-h-[400px] bg-white/40 rounded-xl shadow-lg backdrop-blur-lg hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out p-6 flex flex-col items-center justify-center"
                     >
-                        <span className="text-3xl text-gray-700 font-bold">+</span>
-                    </button>
+                        {editMode ? (
+                            <>
+                                <div className="w-full space-y-3">
+                                    <div className="flex justify-center mb-4">
+                                        <img 
+                                            src={editedUser.image || "https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg"} 
+                                            alt="Profile"
+                                            className="w-32 h-32 rounded-full object-cover shadow-lg"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-white font-semibold mb-1" htmlFor="name">Name:</label>
+                                        <input 
+                                            type="text"
+                                            id="name"
+                                            name="name"
+                                            value={editedUser.name}
+                                            onChange={handleInputChange}
+                                            className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
+                                        />
+                                    </div>
 
-                    <ul className="w-full flex flex-col items-center space-y-6">
-                        {users.map((user) => (
-                            <li 
-                                key={user._id} 
-                                onClick={() => navigate(`/profile/${user._id}`)}
-                                className="relative w-full md:w-3/5 lg:w-2/3 bg-white/30 rounded-xl shadow-lg backdrop-blur-md hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out flex items-center space-x-4 cursor-pointer p-6"
-                            >
-                                <img 
-                                    src={user.image || "https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg"} 
-                                    alt="Profile" 
-                                    className="w-24 h-24 rounded-full object-cover shadow-md"
-                                />
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-900">{user.name}</h3>
-                                    <p className="text-gray-700">{user.email}</p>
+                                    <div>
+                                        <label className="block text-white font-semibold mb-1" htmlFor="email">Email:</label>
+                                        <input 
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            value={editedUser.email}
+                                            onChange={handleInputChange}
+                                            className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-white font-semibold mb-1" htmlFor="image">Profile Image URL:</label>
+                                        <input 
+                                            type="text"
+                                            id="image"
+                                            name="image"
+                                            value={editedUser.image}
+                                            onChange={handleInputChange}
+                                            placeholder="Image URL"
+                                            className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-white font-semibold mb-1" htmlFor="password">New Password:</label>
+                                        <input 
+                                            type="password"
+                                            id="password"
+                                            name="password"
+                                            value={editedUser.password || ''}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter new password"
+                                            className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
+                                        />
+                                    </div>
                                 </div>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Modal for Adding New User */}
-                {isModalOpen && (
-                    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                            <h2 className="text-xl font-bold mb-4">Add New User</h2>
-                            <form onSubmit={handleAddUser} className="space-y-4">
-                                <input
-                                    type="text"
-                                    name="name"
-                                    placeholder="Name"
-                                    value={newUser.name}
-                                    onChange={handleNewUserChange}
-                                    className="w-full p-2 border rounded"
-                                    required
-                                />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder="Email"
-                                    value={newUser.email}
-                                    onChange={handleNewUserChange}
-                                    className="w-full p-2 border rounded"
-                                    required
-                                />
-                                <input
-                                    type="password"
-                                    name="password"
-                                    placeholder="Password"
-                                    value={newUser.password}
-                                    onChange={handleNewUserChange}
-                                    className="w-full p-2 border rounded"
-                                    required
-                                />
-                                <input
-                                    type="text"
-                                    name="image"
-                                    placeholder="Profile Image URL (optional)"
-                                    value={newUser.image}
-                                    onChange={handleNewUserChange}
-                                    className="w-full p-2 border rounded"
-                                />
-                                <div className="flex justify-between">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsModalOpen(false)}
-                                        className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                                <div className="flex space-x-4 mt-6">
+                                    <button 
+                                        className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+                                        onClick={handleSave}
+                                    >
+                                        Save
+                                    </button>
+                                    <button 
+                                        className="bg-gray-400 text-white px-6 py-2 rounded-lg hover:bg-gray-500 transition"
+                                        onClick={() => setEditMode(false)}
                                     >
                                         Cancel
                                     </button>
-                                    <button
-                                        type="submit"
-                                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                    <button 
+                                        className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition"
+                                        onClick={handleDelete}
                                     >
-                                        Add User
+                                        Delete
                                     </button>
                                 </div>
-                            </form>
-                        </div>
+                            </>
+                        ) : (
+                            <>
+                                <img 
+                                    src={users[0].image || "https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg"} 
+                                    alt="Profile" 
+                                    className="w-40 h-40 rounded-full object-cover shadow-lg mb-6"
+                                />
+                                <div className="text-center">
+                                    <h3 className="text-4xl font-semibold text-gray-700 mb-2">{users[0].name}</h3>
+                                    <p className="text-2xl text-gray-600">{users[0].email}</p>
+                                </div>
+                            </>
+                        )}
                     </div>
                 )}
             </div>
-        );
-    }
-    return (
-        <div 
-                className="p-6 min-h-[500px] max-w-[800px] flex flex-col justify-center items-center space-y-6 bg-contain bg-center bg-no-repeat w-screen rounded-xl overflow-hidden transition-all duration-300 ease-in-out"
-                style={{ backgroundImage: "url('https://images.unsplash.com/photo-1720358553488-d332927ce65b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bW91bnRhaW4lMjBhZXN0aGV0aWN8ZW58MHx8MHx8fDA%3D')", backgroundSize: "cover" }}
-            >
-            <div className="relative w-full md:w-3/5 lg:w-2/3 bg-white/30 rounded-xl shadow-lg backdrop-blur-lg hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out p-6 flex flex-col items-center">
-            <img 
-                src={user?.image || "https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg"} 
-                alt="Profile"
-                className="w-32 h-32 rounded-full object-cover shadow-lg"
-                />
-    
-            {editMode ? (
-                <>
-                    <input 
-                        type="text"
-                        name="name"
-                        value={editedUser.name}
-                        onChange={handleInputChange}
-                        className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
-                    />
-                    <input 
-                        type="email"
-                        name="email"
-                        value={editedUser.email}
-                        onChange={handleInputChange}
-                        className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
-                    />
-                    <input 
-                        type="text"
-                        name="image"
-                        value={editedUser.image}
-                        onChange={handleInputChange}
-                        placeholder="Image URL"
-                        className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
-                    />
-                    <div className="flex space-x-4 mt-4">
-                        <button 
-                            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
-                            onClick={handleSave}
-                        >
-                            Save
-                        </button>
-                        <button 
-                            className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
-                            onClick={() => setEditMode(false)}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </>
-            ) : (
 
-                <>
-                    <h2 className="text-2xl font-semibold text-white">{user?.name}</h2>
-                    <p className="text-lg text-gray-200">{user?.email}</p>
-                    <div className="mt-4 flex space-x-4">
-                        <button 
-                            className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
-                            onClick={() => setEditMode(true)}
-                            >
-                            Edit
-                        </button>
-                        <button 
-                            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
-                            onClick={handleDelete}
-                            >
-                            Delete
-                        </button>
-                        <button 
-                            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
-                            onClick={() => navigate("/profile")}
-                            >
-                            Back to Profiles
-                        </button>
+            {/* Modal for Adding New User */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                        <h2 className="text-xl font-bold mb-4">Add New User</h2>
+                        <form onSubmit={handleAddUser} className="space-y-4">
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="Name"
+                                value={newUser.name}
+                                onChange={handleNewUserChange}
+                                className="w-full p-2 border rounded"
+                                required
+                            />
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                value={newUser.email}
+                                onChange={handleNewUserChange}
+                                className="w-full p-2 border rounded"
+                                required
+                            />
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                value={newUser.password}
+                                onChange={handleNewUserChange}
+                                className="w-full p-2 border rounded"
+                                required
+                            />
+                            <input
+                                type="text"
+                                name="image"
+                                placeholder="Profile Image URL (optional)"
+                                value={newUser.image}
+                                onChange={handleNewUserChange}
+                                className="w-full p-2 border rounded"
+                            />
+                            <div className="flex justify-between">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                >
+                                    Add User
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </>
-                
+                </div>
             )}
-            </div>
         </div>
     );
 };
