@@ -11,13 +11,93 @@ const Signup = () => {
         image: ""
     });
 
+    const [errors, setErrors] = useState({});
+
+    // Validation functions
+    const validateName = (name) => {
+        if (name.length < 2) {
+            return "Name must be at least 2 characters long";
+        }
+        if (name.length > 50) {
+            return "Name cannot exceed 50 characters";
+        }
+        if (!/^[a-zA-Z\s]+$/.test(name)) {
+            return "Name can only contain letters and spaces";
+        }
+        return null;
+    };
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+            return "Email is required";
+        }
+        if (!emailRegex.test(email)) {
+            return "Invalid email address";
+        }
+        if (email.length > 100) {
+            return "Email is too long";
+        }
+        return null;
+    };
+
+    const validatePassword = (password) => {
+        if (password.length < 8) {
+            return "Password must be at least 8 characters long";
+        }
+        if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&\[\]{}()])[A-Za-z\d@$!%*#?&\[\]{}()]{8,}$/.test(password.trim())) {
+            return "Password must include letters, numbers, and special characters";
+        }        
+        return null;
+    };
+
+    const validateImageUrl = (url) => {
+        // Optional validation for image URL
+        if (url && url.trim() !== "") {
+            try {
+                new URL(url);
+                return null;
+            } catch {
+                return "Invalid image URL";
+            }
+        }
+        return null;
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        
+        // Clear individual field error when user starts typing
+        if (errors[name]) {
+            const newErrors = {...errors};
+            delete newErrors[name];
+            setErrors(newErrors);
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const newErrors = {};
+
+        // Validate each field
+        const nameError = validateName(formData.name);
+        const emailError = validateEmail(formData.email);
+        const passwordError = validatePassword(formData.password);
+        const imageError = validateImageUrl(formData.image);
+
+        // Collect errors
+        if (nameError) newErrors.name = nameError;
+        if (emailError) newErrors.email = emailError;
+        if (passwordError) newErrors.password = passwordError;
+        if (imageError) newErrors.image = imageError;
+
+        // Check if there are any errors
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
         try {
             await axios.post("http://localhost:3000/api/profile", formData);
             alert("Account created successfully!");
@@ -44,9 +124,9 @@ const Signup = () => {
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
-                                className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
-                                required
+                                className={`w-full p-2 rounded-lg border ${errors.name ? 'border-red-500' : 'border-gray-300'} focus:outline-none`}
                             />
+                            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                         </div>
                         <div>
                             <label className="block text-white font-semibold mb-1" htmlFor="email">Email</label>
@@ -56,9 +136,9 @@ const Signup = () => {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
-                                required
+                                className={`w-full p-2 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:outline-none`}
                             />
+                            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                         </div>
                         <div>
                             <label className="block text-white font-semibold mb-1" htmlFor="password">Password</label>
@@ -68,9 +148,9 @@ const Signup = () => {
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
-                                required
+                                className={`w-full p-2 rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:outline-none`}
                             />
+                            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                         </div>
                         <div>
                             <label className="block text-white font-semibold mb-1" htmlFor="image">Profile Image URL (optional)</label>
@@ -80,8 +160,9 @@ const Signup = () => {
                                 name="image"
                                 value={formData.image}
                                 onChange={handleChange}
-                                className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none"
+                                className={`w-full p-2 rounded-lg border ${errors.image ? 'border-red-500' : 'border-gray-300'} focus:outline-none`}
                             />
+                            {errors.image && <p className="text-red-500 text-sm mt-1">{errors.image}</p>}
                         </div>
                         <button
                             type="submit"
@@ -106,4 +187,4 @@ const Signup = () => {
     );
 };
 
-export default Signup; 
+export default Signup;
