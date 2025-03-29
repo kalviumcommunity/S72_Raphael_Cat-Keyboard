@@ -1,10 +1,8 @@
 //eslint-disable-next-line
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const ProfileComponent = () => {
-    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [users, setUsers] = useState([]);
     const [editMode, setEditMode] = useState(false);
@@ -206,7 +204,7 @@ const ProfileComponent = () => {
                                 onChange={handleNewUserChange}
                                 className="w-full p-2 border rounded"
                                 required
-                            />
+                            />  
                             <input
                                 type="email"
                                 name="email"
