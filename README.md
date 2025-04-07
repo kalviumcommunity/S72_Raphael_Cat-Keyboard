@@ -34,6 +34,4 @@ I have chosen this project because it blends creativity with technical challenge
 
 **Project Deployment Link:**
 
-https://cat-keyboard.onrender.com/ping
-
-https://dash.cloudflare.com/a1fb790955c533772c5bfdca2fb00464/pages/view/cat-keyboard
+https://b227448c.s72-raphael-cat-keyboard-fork.pages.dev/
