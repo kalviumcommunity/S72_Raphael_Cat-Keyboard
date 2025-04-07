@@ -33,5 +33,3 @@ I have chosen this project because it blends creativity with technical challenge
 - User Interaction Analytics: Get hands-on experience in tracking and visualizing data.
 
 **Project Deployment Link:**
-
-https://b227448c.s72-raphael-cat-keyboard-fork.pages.dev/
