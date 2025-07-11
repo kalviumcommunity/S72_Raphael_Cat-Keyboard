@@ -38,7 +38,7 @@ export default function CatKeyboardLanding() {
         <p className="mt-4 text-gray-600 text-lg">
           A fun and playful keyboard that meows with every keypress!
         </p>
-        <button onClick={() => navigate("/keyboard")} className="mt-6 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl text-lg shadow-md mb-6 hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out">
+        <button onClick={() => navigate(isLoggedIn ? "/keyboard" : "/signup")} className="mt-6 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl text-lg shadow-md mb-6 hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out">
           Try it Meow!
         </button>
       </div>
@@ -52,7 +52,7 @@ export default function CatKeyboardLanding() {
         </div>
         <div className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out">
           <FaMusic className="text-4xl text-purple-500" />
-          <h3 className="text-xl font-semibold mt-3">Musical Mode</h3>
+          <h3 className="text-xl font-semibold mt-3">Musical Meows</h3>
           <p className="text-gray-600 text-center mt-2">Compose your own feline symphony.</p>
         </div>
         <div className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out">
